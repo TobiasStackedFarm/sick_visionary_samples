@@ -1,4 +1,5 @@
 import os
+import pickle
 import time
 
 from base.python.PointCloud.PointCloud import (convertToPointCloud,
@@ -31,35 +32,35 @@ def processSensorData(sensor_data, device_type, img_dir, output_prefix, pcl_dir,
     Returns:
         None
     """
-    print("Data Timestamp [YYYY-MM-DD HH:MM:SS.mm] = %04u-%02u-%02u %02u:%02u:%02u.%03u" % (
-        sensor_data.getDecodedTimestamp()))
+    # print("Data Timestamp [YYYY-MM-DD HH:MM:SS.mm] = %04u-%02u-%02u %02u:%02u:%02u.%03u" % (
+    #     sensor_data.getDecodedTimestamp()))
 
     if sensor_data.hasDepthMap:
         frame_number = sensor_data.depthmap.frameNumber
-        print("Data contains depth map data")
+        # print("Data contains depth map data")
 
         if write_files:
-            print("=== Write PNG file: Frame number: {}".format(frame_number))
-            writeFrame(device_type, sensor_data,
-                       os.path.join(img_dir, output_prefix))
-            print("=== Converting image to pointcloud")
+            # print("=== Write PNG file: Frame number: {}".format(frame_number))
+            # writeFrame(device_type, sensor_data,
+            #            os.path.join(img_dir, output_prefix))
+            # print("=== Converting image to pointcloud")
 
             # Non optimized
-            start_time = time.time()
-            world_coordinates, dist_data = convertToPointCloud(
-                sensor_data.depthmap.distance,
-                sensor_data.depthmap.intensity,
-                sensor_data.depthmap.confidence,
-                sensor_data.cameraParams,
-                sensor_data.xmlParser.stereo
-            )
-            end_time = time.time()
-            execution_time = end_time - start_time
-            print(f"convertToPointCloud took: {execution_time:.3}s")
+            # start_time = time.time()
+            # world_coordinates, dist_data = convertToPointCloud(
+            #     sensor_data.depthmap.distance,
+            #     sensor_data.depthmap.intensity,
+            #     # sensor_data.depthmap.confidence,
+            #     sensor_data.cameraParams,
+            #     sensor_data.xmlParser.stereo
+            # )
+            # end_time = time.time()
+            # execution_time = end_time - start_time
+            # print(f"convertToPointCloud took: {execution_time:.3}s")
 
             # Optimized
             is_stereo = True if device_type == "Visionary-S" else False
-            start_time = time.time()
+            # start_time = time.time()
             point_cloud = convertToPointCloudOptimized(
                 sensor_data.depthmap.distance,
                 sensor_data.depthmap.confidence,
@@ -67,13 +68,16 @@ def processSensorData(sensor_data, device_type, img_dir, output_prefix, pcl_dir,
                 is_stereo
             )
             end_time = time.time()
-            execution_time = end_time - start_time
-            print(f"convertToPointCloudOptimized took: {execution_time:.3}s")
+            # execution_time = end_time - start_time
+            # print(f"convertToPointCloudOptimized took: {execution_time:.3}s")
 
-            # Write output of the non optimized function to PLY
-            writePointCloudToPLY(os.path.join(
-                pcl_dir, "world_coordinates{}.ply".format(frame_number)), world_coordinates)
-
-            # Write output of the optimized function to PCD
-            writePointCloudToPCD(os.path.join(
-                pcl_dir, "world_coordinates{}.pcd".format(frame_number)), point_cloud.reshape(-1, point_cloud.shape[-1]))
+            pickle.dump(
+                point_cloud, open(f"{pcl_dir}/world_coordinates{frame_number}.pickle", 'wb')
+            )
+            # # Write output of the non optimized function to PLY
+            # writePointCloudToPLY(os.path.join(
+            #     pcl_dir, "world_coordinates{}.ply".format(frame_number)), world_coordinates)
+            #
+            # # Write output of the optimized function to PCD
+            # writePointCloudToPCD(os.path.join(
+            #     pcl_dir, "world_coordinates{}.pcd".format(frame_number)), point_cloud.reshape(-1, point_cloud.shape[-1]))

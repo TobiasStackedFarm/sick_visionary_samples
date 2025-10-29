@@ -105,12 +105,12 @@ def writeFrame(visionary_type: str, data: Data, file_prefix: str = ""):
         mapdescs.append(tagAndName)
 
         # confidence
-        confidence_data = np.array(
-            data.depthmap.confidence, dtype=np.uint16).reshape((height, width))
-        cv2.imwrite(file_prefix + frame_prefix + "-conf.png",
-                    confidence_data, [cv2.IMWRITE_PNG_COMPRESSION, 0])
-        tagAndName = TagAndName("conf", frame_prefix + "-conf.png")
-        mapdescs.append(tagAndName)
+        # confidence_data = np.array(
+        #     data.depthmap.confidence, dtype=np.uint16).reshape((height, width))
+        # cv2.imwrite(file_prefix + frame_prefix + "-conf.png",
+        #             confidence_data, [cv2.IMWRITE_PNG_COMPRESSION, 0])
+        # tagAndName = TagAndName("conf", frame_prefix + "-conf.png")
+        # mapdescs.append(tagAndName)
         # end::visionary_t_mini_maps[]
 
     elif visionary_type == 'Visionary-S':

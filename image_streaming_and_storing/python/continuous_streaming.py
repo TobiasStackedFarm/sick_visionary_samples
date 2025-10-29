@@ -114,10 +114,10 @@ def runContinuousStreamingDemo(ip_address: str, transport_protocol: str, receive
     # end::close_streaming[]
 
     # tag::logout_and_close[]
-    device_control.logout()
-    device_control.close()
+    # device_control.logout()
+    # device_control.close()
     # end::logout_and_close[]
-    print("Logout and close")
+    # print("Logout and close")
 
 
 if __name__ == "__main__":
